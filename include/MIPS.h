@@ -23,12 +23,12 @@ private:
     uint32_t registers[32];
 };
 
-void WriteRegisterRd(R3501* r3501, uint32_t opcode, uint32_t value);
-uint32_t ReadRegisterRt(R3501* r3501, uint32_t opcode);
-uint32_t ReadRegisterRs(R3501* r3501, uint32_t opcode);
+void WriteRegisterRd(R3501*, uint32_t, uint32_t);
+uint32_t ReadRegisterRt(R3501*, uint32_t);
+uint32_t ReadRegisterRs(R3501*, uint32_t);
 
-void InterpretAddu(R3501* r3501, uint32_t opcode);
-void InterpretSubu(R3501* r3501, uint32_t opcode);
+void InterpretAddu(R3501*, uint32_t);
+void InterpretSubu(R3501*, uint32_t);
 
 }
 

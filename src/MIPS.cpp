@@ -19,7 +19,7 @@ uint32_t InstructionRs(uint32_t opcode) {
 }
 
 uint32_t InstructionOp(uint32_t opcode) {
-    return (opcode >> 26u) & 0x3F;
+    return (opcode >> 26u) & 0x3Fu;
 }
 
 R3501::R3501() : registers{ 0 } {}
