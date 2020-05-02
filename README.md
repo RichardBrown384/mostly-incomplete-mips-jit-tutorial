@@ -29,7 +29,7 @@ In this example we go a step further and pass arguments to our free C++ function
 In this example we introduce a simplified MIPS processor and introduce what is called a _threaded interpreter_. This is to say we do a single pass over the instructions and simply call the underlying interpreted function.
 
 ### Example 4
-In this example we now attempt to re-implement one of the simpler instructions directly by reading and writing the guest registers too and from RAM.
+In this example we now attempt to re-implement one of the simpler instructions directly by reading and writing the guest registers to and from RAM.
 
 ## References
 
