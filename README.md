@@ -37,6 +37,7 @@ In this example we now attempt to re-implement one of the simpler instructions d
 1. [Calling conventions](https://www.agner.org/optimize/calling_conventions.pdf)
 1. [x64 instruction encoding](https://wiki.osdev.org/X86-64_Instruction_Encoding)
 1. [x64 instruction reference](https://www.felixcloutier.com/x86/)
+1. [Online Assembler & Disassembler](https://defuse.ca/online-x86-assembler.htm)
 
 ***
 
