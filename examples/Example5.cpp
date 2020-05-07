@@ -20,16 +20,26 @@ void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t op
     const uint32_t rs = InstructionRs(opcode);
     const uint32_t rt = InstructionRt(opcode);
     const uint32_t rd = InstructionRd(opcode);
-    emitter.MovEAXAbs(processor.RegisterAddress(rs));
-    emitter.MovR32R32(RCX, RAX);
-    emitter.MovEAXAbs(processor.RegisterAddress(rt));
+    const size_t size = sizeof(uint32_t);
+    emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
+    emitter.MovR32Disp8(RAX, RDX, rs * size);
+    emitter.MovR32Disp8(RCX, RDX, rt * size);
     emitter.AddR32R32(RAX, RCX);
-    emitter.MovAbsEAX(processor.RegisterAddress(rd));
+    emitter.MovDisp8R32(RDX, rd * size, RAX);
 }
 
 void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
+    // Rd = Rs - Rt
     using namespace rbrown;
-    CallInterpreterFunction(emitter, processor, opcode, AddressOf(InterpretSubu));
+    const uint32_t rs = InstructionRs(opcode);
+    const uint32_t rt = InstructionRt(opcode);
+    const uint32_t rd = InstructionRd(opcode);
+    const size_t size = sizeof(uint32_t);
+    emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
+    emitter.MovR32Disp8(RAX, RDX, rs * size);
+    emitter.MovR32Disp8(RCX, RDX, rt * size);
+    emitter.SubR32R32(RAX, RCX);
+    emitter.MovDisp8R32(RDX, rd * size, RAX);
 }
 
 void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
@@ -47,7 +57,7 @@ void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode
 }
 }
 
-void Example4() {
+void Example5() {
 
     using namespace rbrown;
 
@@ -65,7 +75,7 @@ void Example4() {
     emitter.PushR64(RSI);
     emitter.PushR64(RAX);
     emitter.PushR64(RCX);
-    emitter.SubR64Imm8(RSP, 8);
+    emitter.PushR64(RDX);
 
     // Instructions
     // ADDU $3, $1, $2
@@ -75,7 +85,7 @@ void Example4() {
     }
 
     // Epilogue
-    emitter.AddR64Imm8(RSP, 8);
+    emitter.PopR64(RDX);
     emitter.PopR64(RCX);
     emitter.PopR64(RAX);
     emitter.PopR64(RSI);

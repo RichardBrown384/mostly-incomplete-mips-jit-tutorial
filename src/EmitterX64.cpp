@@ -10,7 +10,7 @@ uint8_t Rex(uint32_t w, uint32_t r, uint32_t x, uint32_t b) {
 }
 
 uint8_t ModRM(uint32_t mod, uint32_t reg, uint32_t rm) {
-    return ((mod & 0x3u) << 6u) + ((reg & 0x7u) << 3u) + (rm & 0x7u);
+    return ((mod & 3u) << 6u) + ((reg & 7u) << 3u) + (rm & 7u);
 }
 
 }
@@ -19,40 +19,58 @@ EmitterX64::EmitterX64(CodeBuffer& buf) : buffer(buf) {}
 
 void EmitterX64::AddR32R32(uint32_t rm, uint32_t reg) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
-    const uint8_t mod = ModRM(0x3u, reg, rm);
+    const uint8_t mod = ModRM(3u, reg, rm);
     buffer.Bytes({ rex, 0x01u, mod });
 }
 
 void EmitterX64::AddR64Imm8(uint32_t rm, uint8_t imm8) {
     const uint8_t rex = Rex(1, 0, 0, rm >> 3u);
-    const uint8_t mod = ModRM(0x3u, 0u, rm);
+    const uint8_t mod = ModRM(3u, 0u, rm);
     buffer.Bytes({ rex, 0x83u, mod, imm8 });
+}
+
+void EmitterX64::SubR32R32(uint32_t rm, uint32_t reg) {
+    const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
+    const uint8_t mod = ModRM(3u, reg, rm);
+    buffer.Bytes({ rex, 0x29u, mod });
 }
 
 void EmitterX64::SubR64Imm8(uint32_t rm, uint8_t imm8) {
     const uint8_t rex = Rex(1, 0, 0, rm >> 3u);
-    const uint8_t mod = ModRM(0x3u, 5u, rm);
+    const uint8_t mod = ModRM(3u, 5u, rm);
     buffer.Bytes({ rex, 0x83u, mod, imm8 });
 }
 
 void EmitterX64::MovR32R32(uint32_t rm, uint32_t reg) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
-    const uint8_t mod = ModRM(0x3u, reg, rm);
+    const uint8_t mod = ModRM(3u, reg, rm);
     buffer.Bytes({ rex, 0x89u, mod });
+}
+
+void EmitterX64::MovR32Disp8(uint32_t reg, uint32_t rm, uint8_t disp8) {
+    const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
+    const uint8_t mod = ModRM( 1u, reg, rm);
+    buffer.Bytes({ rex, 0x8Bu, mod, disp8 });
 }
 
 void EmitterX64::MovR32Imm32(uint32_t rw, uint32_t imm32) {
     const uint8_t rex = Rex(0, 0, 0, rw >> 3u);
-    const uint8_t code = 0xB8u + (rw & 0x7u);
+    const uint8_t code = 0xB8u + (rw & 7u);
     buffer.Bytes({ rex, code });
     buffer.DWord(imm32);
 }
 
 void EmitterX64::MovR64Imm64(uint32_t rw, uint64_t imm64) {
     const uint8_t rex = Rex(1, 0, 0, rw >> 3u);
-    const uint8_t code = 0xB8u + (rw & 0x7u);
+    const uint8_t code = 0xB8u + (rw & 7u);
     buffer.Bytes({ rex, code });
     buffer.QWord(imm64);
+}
+
+void EmitterX64::MovDisp8R32(uint32_t rm, uint8_t disp8, uint32_t reg) {
+    const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
+    const uint8_t mod = ModRM( 1u, reg, rm);
+    buffer.Bytes({ rex, 0x89u, mod, disp8 });
 }
 
 void EmitterX64::MovEAXAbs(uintptr_t address) {
