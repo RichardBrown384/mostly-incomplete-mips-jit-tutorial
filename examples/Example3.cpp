@@ -5,7 +5,7 @@
 
 namespace {
 
-void CallInterpreterFunction(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode, uintptr_t function) {
+void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3501 &processor, uint32_t opcode) {
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR32Imm32(RSI, opcode);
@@ -16,12 +16,12 @@ void CallInterpreterFunction(rbrown::EmitterX64& emitter, rbrown::R3501& process
 
 void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
     using namespace rbrown;
-    CallInterpreterFunction(emitter, processor, opcode, AddressOf(InterpretAddu));
+    CallInterpreterFunction(emitter, AddressOf(InterpretAddu), processor, opcode);
 }
 
 void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
     using namespace rbrown;
-    CallInterpreterFunction(emitter, processor, opcode, AddressOf(InterpretSubu));
+    CallInterpreterFunction(emitter, AddressOf(InterpretSubu), processor, opcode);
 }
 
 void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {

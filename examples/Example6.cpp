@@ -33,6 +33,19 @@ void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t op
     emitter.MovDisp8R32(RDX, rd * size, RAX);
 }
 
+void EmitAddiu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
+    // Rt = Rs + Imm
+    using namespace rbrown;
+    const uint32_t rs = InstructionRs(opcode);
+    const uint32_t rt = InstructionRt(opcode);
+    const uint32_t immediate = InstructionImmediateExtended(opcode);
+    const size_t size = sizeof(uint32_t);
+    emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
+    emitter.MovR32Disp8(RAX, RDX, rs * size);
+    emitter.AddR32Imm32(RAX, immediate);
+    emitter.MovDisp8R32(RDX, rt * size, RAX);
+}
+
 void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
     using namespace rbrown;
     switch (InstructionOp(opcode)) {
@@ -42,13 +55,14 @@ void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode
             default:
                 break;
         }
+        case 0x09: return EmitAddiu(emitter, processor, opcode);
         default:
             break;
     }
 }
 }
 
-void Example5() {
+void Example6() {
 
     using namespace rbrown;
 
@@ -57,6 +71,7 @@ void Example5() {
     processor.WriteRegister(2, 72);
     processor.WriteRegister(4, 99);
     processor.WriteRegister(5, 77);
+    processor.WriteRegister(10, 8900);
 
     CodeBuffer buffer(1024);
 
@@ -71,7 +86,8 @@ void Example5() {
     // Instructions
     // ADDU $3, $1, $2
     // SUBU $6, $4, $5
-    for (const uint32_t opcode : { 0x00221821u, 0x00853023u }) {
+    // ADDIU $11, $10, 2000
+    for (const uint32_t opcode : { 0x00221821u, 0x00853023u, 0x254B07D0u }) {
         Emit(emitter, processor, opcode);
     }
 

@@ -23,6 +23,13 @@ void EmitterX64::AddR32R32(uint32_t rm, uint32_t reg) {
     buffer.Bytes({ rex, 0x01u, mod });
 }
 
+void EmitterX64::AddR32Imm32(uint32_t rm, uint32_t imm32) {
+    const uint8_t rex = Rex(0, 0, 0, rm >> 3u);
+    const uint8_t mod = ModRM(3u, 0, rm);
+    buffer.Bytes({ rex, 0x81u, mod });
+    buffer.DWord(imm32);
+}
+
 void EmitterX64::AddR64Imm8(uint32_t rm, uint8_t imm8) {
     const uint8_t rex = Rex(1, 0, 0, rm >> 3u);
     const uint8_t mod = ModRM(3u, 0u, rm);

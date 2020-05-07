@@ -12,6 +12,7 @@ class EmitterX64 {
 public:
     explicit EmitterX64(CodeBuffer&);
     void AddR32R32(uint32_t, uint32_t);
+    void AddR32Imm32(uint32_t, uint32_t);
     void AddR64Imm8(uint32_t, uint8_t);
     void SubR32R32(uint32_t, uint32_t);
     void SubR64Imm8(uint32_t, uint8_t);
