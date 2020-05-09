@@ -11,8 +11,8 @@ struct Processor {
     uint32_t y;
 };
 
-void Add(Processor* processor, uint32_t instruction) {
-    processor->y += instruction;
+void Add(Processor* processor, uint32_t opcode) {
+    processor->y += opcode;
 }
 
 }

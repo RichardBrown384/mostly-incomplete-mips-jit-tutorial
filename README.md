@@ -31,6 +31,12 @@ In this example we introduce a simplified MIPS processor and introduce what is c
 ### Example 4
 In this example we now attempt to re-implement one of the simpler instructions directly by reading and writing the guest registers to and from RAM.
 
+### Example 5
+In this example we reattempt the previous example using register relative indirect addressing.
+
+### Example 6
+In this example we attempt a trivial I-Type instruction.
+
 ## References
 
 1. [Compiler explorer](https://godbolt.org)
