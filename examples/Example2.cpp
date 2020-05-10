@@ -23,12 +23,13 @@ void Example2() {
     using namespace rbrown;
 
     Processor processor { 9, 19 };
+    const uint32_t opcode = 12u;
 
     CodeBuffer buffer(1024);
 
     EmitterX64 emitter(buffer);
     emitter.MovR64Imm64(RDI, AddressOf(processor));
-    emitter.MovR32Imm32(RSI, 12u);
+    emitter.MovR32Imm32(RSI, opcode);
     emitter.SubR64Imm8(RSP, 8u);
     emitter.Call(AddressOf(Add));
     emitter.AddR64Imm8(RSP, 8u);
