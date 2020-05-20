@@ -56,7 +56,7 @@ void EmitterX64::MovR32R32(uint32_t rm, uint32_t reg) {
 
 void EmitterX64::MovR32Disp8(uint32_t reg, uint32_t rm, uint8_t disp8) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
-    const uint8_t mod = ModRM( 1u, reg, rm);
+    const uint8_t mod = ModRM(1u, reg, rm);
     buffer.Bytes({ rex, 0x8Bu, mod, disp8 });
 }
 
@@ -76,7 +76,7 @@ void EmitterX64::MovR64Imm64(uint32_t rw, uint64_t imm64) {
 
 void EmitterX64::MovDisp8R32(uint32_t rm, uint8_t disp8, uint32_t reg) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
-    const uint8_t mod = ModRM( 1u, reg, rm);
+    const uint8_t mod = ModRM(1u, reg, rm);
     buffer.Bytes({ rex, 0x89u, mod, disp8 });
 }
 
