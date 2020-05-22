@@ -60,7 +60,7 @@ void Example5() {
 
     CodeBuffer buffer(1024);
 
-    // Preamble
+    // Prologue
     EmitterX64 emitter(buffer);
     emitter.PushR64(RDI);
     emitter.PushR64(RSI);
