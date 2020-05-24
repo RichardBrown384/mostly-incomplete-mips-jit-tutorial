@@ -15,8 +15,10 @@ public:
     ~CodeBuffer();
     void Protect();
     void Call();
-    [[nodiscard]] uintptr_t Position() const;
+    [[nodiscard]] uintptr_t BufferAddress() const;
+    [[nodiscard]] size_t Position() const;
     void Byte(uint8_t);
+    void Byte(size_t, uint8_t);
     void Bytes(std::initializer_list<uint8_t>);
     void Word(uint16_t);
     void DWord(uint32_t);

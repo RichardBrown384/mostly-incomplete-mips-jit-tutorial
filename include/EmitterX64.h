@@ -3,6 +3,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <map>
+#include <vector>
+
+#include "Label.h"
+#include "CallSite.h"
 
 namespace rbrown {
 
@@ -11,6 +16,8 @@ class CodeBuffer;
 class EmitterX64 {
 public:
     explicit EmitterX64(CodeBuffer&);
+    Label NewLabel();
+    void Bind(Label&);
     void AddR32R32(uint32_t, uint32_t);
     void AddR32Imm32(uint32_t, uint32_t);
     void AddR64Imm8(uint32_t, uint8_t);
@@ -28,8 +35,13 @@ public:
     void CallRel32(uint32_t);
     void Call(uintptr_t);
     void Ret();
+    void Jno(const Label&);
+private:
+    void Bind(const CallSite&, const Label &);
 private:
     CodeBuffer& buffer;
+    std::map<uint64_t, std::vector<CallSite>> callSites;
+    uint64_t nextLabelId;
 };
 
 template<typename T>

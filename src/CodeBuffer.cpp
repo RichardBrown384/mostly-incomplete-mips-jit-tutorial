@@ -20,12 +20,20 @@ void CodeBuffer::Call() {
     reinterpret_cast<void (*)()>(buffer)();
 }
 
-uintptr_t CodeBuffer::Position() const {
-    return reinterpret_cast<uintptr_t>(reinterpret_cast<uint8_t*>(buffer) + pos);
+uintptr_t CodeBuffer::BufferAddress() const {
+    return reinterpret_cast<uintptr_t>(buffer);
+}
+
+size_t CodeBuffer::Position() const {
+    return pos;
 }
 
 void CodeBuffer::Byte(uint8_t b) {
     *(reinterpret_cast<uint8_t*>(buffer) + (pos++)) = b;
+}
+
+void CodeBuffer::Byte(size_t position, uint8_t b) {
+    *(reinterpret_cast<uint8_t*>(buffer) + position) = b;
 }
 
 void CodeBuffer::Bytes(std::initializer_list<uint8_t> bs) {
@@ -35,7 +43,7 @@ void CodeBuffer::Bytes(std::initializer_list<uint8_t> bs) {
 void CodeBuffer::Word(uint16_t v) {
     Byte(uint8_t(v));
     Byte(uint8_t(v >> 8u));
-};
+}
 
 void CodeBuffer::DWord(uint32_t v) {
     Word(uint16_t(v));

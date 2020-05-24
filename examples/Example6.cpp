@@ -13,10 +13,10 @@ void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t op
     const uint32_t rd = InstructionRd(opcode);
     const size_t size = sizeof(uint32_t);
     emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
-    emitter.MovR32Disp8(RAX, RDX, rs * size);
-    emitter.MovR32Disp8(RCX, RDX, rt * size);
+    emitter.MovR32Disp8(RAX, RDX, static_cast<uint8_t>(rs * size));
+    emitter.MovR32Disp8(RCX, RDX, static_cast<uint8_t>(rt * size));
     emitter.AddR32R32(RAX, RCX);
-    emitter.MovDisp8R32(RDX, rd * size, RAX);
+    emitter.MovDisp8R32(RDX, static_cast<uint8_t>(rd * size), RAX);
 }
 
 void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
@@ -27,10 +27,10 @@ void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t op
     const uint32_t rd = InstructionRd(opcode);
     const size_t size = sizeof(uint32_t);
     emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
-    emitter.MovR32Disp8(RAX, RDX, rs * size);
-    emitter.MovR32Disp8(RCX, RDX, rt * size);
+    emitter.MovR32Disp8(RAX, RDX, static_cast<uint8_t>(rs * size));
+    emitter.MovR32Disp8(RCX, RDX, static_cast<uint8_t>(rt * size));
     emitter.SubR32R32(RAX, RCX);
-    emitter.MovDisp8R32(RDX, rd * size, RAX);
+    emitter.MovDisp8R32(RDX, static_cast<uint8_t>(rd * size), RAX);
 }
 
 void EmitAddiu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
@@ -41,9 +41,9 @@ void EmitAddiu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t o
     const uint32_t immediate = InstructionImmediateExtended(opcode);
     const size_t size = sizeof(uint32_t);
     emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
-    emitter.MovR32Disp8(RAX, RDX, rs * size);
+    emitter.MovR32Disp8(RAX, RDX, static_cast<uint8_t>(rs * size));
     emitter.AddR32Imm32(RAX, immediate);
-    emitter.MovDisp8R32(RDX, rt * size, RAX);
+    emitter.MovDisp8R32(RDX, static_cast<uint8_t>(rt * size), RAX);
 }
 
 void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {

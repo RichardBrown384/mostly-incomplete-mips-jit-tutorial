@@ -37,6 +37,9 @@ In this example we reattempt the previous example using register relative indire
 ### Example 6
 In this example we attempt a trivial I-Type instruction.
 
+### Example 7
+In this example we attempt to deal with arithmetic overflow.
+
 ## References
 
 1. [Compiler explorer](https://godbolt.org)

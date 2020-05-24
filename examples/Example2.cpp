@@ -2,12 +2,10 @@
 #include "EmitterX64.h"
 #include "X64.h"
 
-#include <cstdint>
-
 namespace {
 
 struct Processor {
-    uint32_t x;
+    [[maybe_unused]] uint32_t x;
     uint32_t y;
 };
 

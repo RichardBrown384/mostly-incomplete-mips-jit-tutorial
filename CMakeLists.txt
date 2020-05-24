@@ -4,8 +4,10 @@ project(tutorial)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(tutorial
-    src/EmitterX64.cpp
+    src/CallSite.cpp
     src/CodeBuffer.cpp
+    src/EmitterX64.cpp
+    src/Label.cpp
     src/MIPS.cpp
     src/Mmap.cpp
     examples/Example1.cpp
@@ -14,6 +16,7 @@ add_executable(tutorial
     examples/Example4.cpp
     examples/Example5.cpp
     examples/Example6.cpp
+    examples/Example7.cpp
     main.cpp
 )
 
