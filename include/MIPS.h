@@ -21,9 +21,9 @@ private:
     uint32_t registers[32];
 };
 
-class R3501 {
+class R3051 {
 public:
-    R3501();
+    R3051();
 
     [[nodiscard]] uint32_t ReadRegister(uint32_t) const;
     void WriteRegister(uint32_t, uint32_t);
@@ -41,10 +41,10 @@ private:
     COP0 cop0;
 };
 
-uint32_t ReadPC(R3501*);
-void WritePC(R3501*, uint32_t);
+uint32_t ReadPC(R3051*);
+void WritePC(R3051*, uint32_t);
 
-void EnterException(R3501*, uint32_t);
+void EnterException(R3051*, uint32_t);
 
 uint32_t InstructionFunction(uint32_t);
 uint32_t InstructionRd(uint32_t);
@@ -54,15 +54,15 @@ uint32_t InstructionOp(uint32_t);
 uint32_t InstructionImmediate(uint32_t);
 uint32_t InstructionImmediateExtended(uint32_t);
 
-void WriteRegisterRd(R3501*, uint32_t, uint32_t);
-void WriteRegisterRt(R3501*, uint32_t, uint32_t);
-uint32_t ReadRegisterRt(R3501*, uint32_t);
-uint32_t ReadRegisterRs(R3501*, uint32_t);
+void WriteRegisterRd(R3051*, uint32_t, uint32_t);
+void WriteRegisterRt(R3051*, uint32_t, uint32_t);
+uint32_t ReadRegisterRt(R3051*, uint32_t);
+uint32_t ReadRegisterRs(R3051*, uint32_t);
 
-void InterpretAddu(R3501*, uint32_t);
-void InterpretSubu(R3501*, uint32_t);
-void InterpretAddiu(R3501*, uint32_t);
-void InterpretAdd(R3501*, uint32_t);
+void InterpretAddu(R3051*, uint32_t);
+void InterpretSubu(R3051*, uint32_t);
+void InterpretAddiu(R3051*, uint32_t);
+void InterpretAdd(R3051*, uint32_t);
 
 }
 

@@ -5,7 +5,7 @@
 
 namespace {
 
-void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3501 &processor, uint32_t opcode) {
+void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3051 &processor, uint32_t opcode) {
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR32Imm32(RSI, opcode);
@@ -14,17 +14,17 @@ void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rb
     emitter.AddR64Imm8(RSP, 8u);
 }
 
-void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
+void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
     using namespace rbrown;
     CallInterpreterFunction(emitter, AddressOf(InterpretAddu), processor, opcode);
 }
 
-void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
+void EmitSubu(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
     using namespace rbrown;
     CallInterpreterFunction(emitter, AddressOf(InterpretSubu), processor, opcode);
 }
 
-void Emit(rbrown::EmitterX64& emitter, rbrown::R3501& processor, uint32_t opcode) {
+void Emit(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
     using namespace rbrown;
     switch (InstructionOp(opcode)) {
         case 0x00: switch(InstructionFunction(opcode)) {
@@ -43,7 +43,7 @@ void Example3() {
 
     using namespace rbrown;
 
-    R3501 processor;
+    R3051 processor;
     processor.WriteRegister(1, 100);
     processor.WriteRegister(2, 72);
     processor.WriteRegister(4, 99);
