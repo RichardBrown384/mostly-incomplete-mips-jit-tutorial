@@ -14,6 +14,7 @@ constexpr uint32_t SR = 12;
 constexpr uint32_t CAUSE = 13;
 constexpr uint32_t EPC = 14;
 
+constexpr uint32_t RESET_EXCEPTION_VECTOR = 0xBFC00000u;
 constexpr uint32_t BOOT_EXCEPTION_VECTOR = 0xBFC00180u;
 constexpr uint32_t EXCEPTION_VECTOR = 0x80000080u;
 
@@ -34,7 +35,7 @@ uint32_t COP0::EnterException(uint32_t code, uint32_t epc, uint32_t branch) {
     return BOOT_EXCEPTION_VECTOR;
 }
 
-R3051::R3051() : registers{ 0 }, pc { 0xBFC00000u }, cop0 { } {}
+R3051::R3051() : registers { 0 }, pc { RESET_EXCEPTION_VECTOR }, cop0 { } {}
 
 uint32_t R3051::ReadRegister(uint32_t r) const { return registers[r]; }
 
