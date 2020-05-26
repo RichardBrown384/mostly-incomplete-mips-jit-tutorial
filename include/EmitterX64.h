@@ -37,7 +37,7 @@ public:
     void Ret();
     void Jno(const Label&);
 private:
-    void Bind(const CallSite&, const Label &);
+    void FixUpCallSite(const CallSite&, const Label&);
 private:
     CodeBuffer& buffer;
     std::map<uint64_t, std::vector<CallSite>> callSites;

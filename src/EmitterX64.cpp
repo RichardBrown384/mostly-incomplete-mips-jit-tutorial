@@ -18,19 +18,22 @@ uint8_t ModRM(uint32_t mod, uint32_t reg, uint32_t rm) {
 EmitterX64::EmitterX64(CodeBuffer& buf) : buffer{ buf }, callSites{ }, nextLabelId {0}  {}
 
 Label EmitterX64::NewLabel() {
-    return (Label) { nextLabelId++ };
+    return static_cast<Label>(nextLabelId++);
 }
 
 void EmitterX64::Bind(Label& label) {
+    if (label.Bound()) {
+        return;
+    }
     label.Bind(buffer.Position());
     const uint64_t id = label.Id();
     for (const CallSite& site: callSites[id]) {
-        Bind(site, label);
+        FixUpCallSite(site, label);
     }
     callSites.erase(id);
 }
 
-void EmitterX64::Bind(const CallSite& site, const Label& label) {
+void EmitterX64::FixUpCallSite(const CallSite& site, const Label& label) {
     buffer.Byte(site.Position() - 1u, static_cast<uint8_t>(label.Position() - site.Position()));
 }
 
@@ -136,7 +139,7 @@ void EmitterX64::Jno(const Label& label) {
     buffer.Bytes({ 0x71u, 0x00u });
     const size_t position = buffer.Position();
     if (label.Bound()) {
-        Bind((const CallSite) { position }, label);
+        FixUpCallSite(static_cast<CallSite>(position), label);
     } else {
         callSites[label.Id()].emplace_back(position);
     }
