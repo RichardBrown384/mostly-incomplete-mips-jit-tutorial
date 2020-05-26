@@ -18,6 +18,7 @@ public:
     explicit EmitterX64(CodeBuffer&);
     Label NewLabel();
     void Bind(Label&);
+    void Jno(const Label&);
     void AddR32R32(uint32_t, uint32_t);
     void AddR32Imm32(uint32_t, uint32_t);
     void AddR64Imm8(uint32_t, uint8_t);
@@ -35,7 +36,6 @@ public:
     void CallRel32(uint32_t);
     void Call(uintptr_t);
     void Ret();
-    void Jno(const Label&);
 private:
     void FixUpCallSite(const CallSite&, const Label&);
 private:

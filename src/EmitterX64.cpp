@@ -37,6 +37,16 @@ void EmitterX64::FixUpCallSite(const CallSite& site, const Label& label) {
     buffer.Byte(site.Position() - 1u, static_cast<uint8_t>(label.Position() - site.Position()));
 }
 
+void EmitterX64::Jno(const Label& label) {
+    buffer.Bytes({ 0x71u, 0x00u });
+    const size_t position = buffer.Position();
+    if (label.Bound()) {
+        FixUpCallSite(static_cast<CallSite>(position), label);
+    } else {
+        callSites[label.Id()].emplace_back(position);
+    }
+}
+
 void EmitterX64::AddR32R32(uint32_t rm, uint32_t reg) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
     const uint8_t mod = ModRM(3u, reg, rm);
@@ -133,16 +143,6 @@ void EmitterX64::Call(uintptr_t target) {
 
 void EmitterX64::Ret() {
     buffer.Byte(0xC3u);
-}
-
-void EmitterX64::Jno(const Label& label) {
-    buffer.Bytes({ 0x71u, 0x00u });
-    const size_t position = buffer.Position();
-    if (label.Bound()) {
-        FixUpCallSite(static_cast<CallSite>(position), label);
-    } else {
-        callSites[label.Id()].emplace_back(position);
-    }
 }
 
 }
