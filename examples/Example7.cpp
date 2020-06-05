@@ -5,10 +5,10 @@
 
 namespace {
 
-void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3051 &processor, uint32_t opcode) {
+void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3051 &processor, uint32_t arg1) {
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
-    emitter.MovR32Imm32(RSI, opcode);
+    emitter.MovR32Imm32(RSI, arg1);
     emitter.SubR64Imm8(RSP, 8u);
     emitter.Call(function);
     emitter.AddR64Imm8(RSP, 8u);
@@ -21,15 +21,16 @@ void EmitAdd(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opc
     const uint32_t rt = InstructionRt(opcode);
     const uint32_t rd = InstructionRd(opcode);
     constexpr size_t size = sizeof(uint32_t);
-    Label label = emitter.NewLabel();
+    Label setRegister = emitter.NewLabel();
     emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
     emitter.MovR32Disp8(RAX, RDX, static_cast<uint8_t>(rs * size));
     emitter.MovR32Disp8(RCX, RDX, static_cast<uint8_t>(rt * size));
     emitter.AddR32R32(RAX, RCX);
-    emitter.Jno(label);
+    emitter.Jno(setRegister);
+    CallInterpreterFunction(emitter, AddressOf(WritePC), processor, 0xBADC0FFE);
     CallInterpreterFunction(emitter, AddressOf(EnterException), processor, ARITHMETIC_OVERFLOW);
     emitter.Ret();
-    emitter.Bind(label);
+    emitter.Bind(setRegister);
     emitter.MovDisp8R32(RDX, static_cast<uint8_t>(rd * size), RAX);
 }
 
