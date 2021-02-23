@@ -47,6 +47,20 @@ void EmitterX64::Jno(const Label& label) {
     }
 }
 
+void EmitterX64::Jne(const Label& label) {
+    buffer.Bytes({ 0x75u, 0x00u });
+    const size_t position = buffer.Position();
+    if (label.Bound()) {
+        FixUpCallSite(static_cast<CallSite>(position), label);
+    } else {
+        callSites[label.Id()].emplace_back(position);
+    }
+}
+
+void EmitterX64::TestALImm8(uint8_t imm8) {
+    buffer.Bytes({ 0xA8, imm8 });
+}
+
 void EmitterX64::AddR32R32(uint32_t rm, uint32_t reg) {
     const uint8_t rex = Rex(0, reg >> 3u, 0, rm >> 3u);
     const uint8_t mod = ModRM(3u, reg, rm);

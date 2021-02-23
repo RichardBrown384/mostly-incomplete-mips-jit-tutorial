@@ -40,6 +40,9 @@ In this example we attempt a trivial I-Type instruction.
 ### Example 7
 In this example we attempt to deal with arithmetic overflow.
 
+### Example 8
+In this example we attempt to store a register in memory.
+
 ## References
 
 1. [Compiler explorer](https://godbolt.org)

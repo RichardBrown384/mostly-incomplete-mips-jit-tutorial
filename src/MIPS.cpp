@@ -1,4 +1,5 @@
 #include "MIPS.h"
+#include <iostream>
 
 namespace rbrown {
 
@@ -109,6 +110,11 @@ uint32_t ReadRegisterRs(R3051* r3051, uint32_t opcode) {
     return r3051->ReadRegister(InstructionRs(opcode));
 }
 
+bool StoreWord(R3051* r3051, uint32_t virtualAddress, uint32_t value) {
+    std::cout << "store word " << virtualAddress << ", " << value << std::endl;
+    return true;
+}
+
 void InterpretAddu(R3051* r3051, uint32_t opcode) {
     const uint32_t s = ReadRegisterRs(r3051, opcode);
     const uint32_t t = ReadRegisterRt(r3051, opcode);
@@ -136,6 +142,13 @@ void InterpretAdd(R3051* r3051, uint32_t opcode) {
         return;
     }
     WriteRegisterRd(r3051, opcode, result);
+}
+
+void InterpretSw(R3051* r3051, uint32_t opcode) {
+    const uint32_t s = ReadRegisterRs(r3051, opcode); // base
+    const uint32_t t = ReadRegisterRt(r3051, opcode);
+    const uint32_t immediate = InstructionImmediateExtended(opcode);
+    StoreWord(r3051, s + immediate, t);
 }
 
 

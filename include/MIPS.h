@@ -59,6 +59,8 @@ void WriteRegisterRt(R3051*, uint32_t, uint32_t);
 uint32_t ReadRegisterRt(R3051*, uint32_t);
 uint32_t ReadRegisterRs(R3051*, uint32_t);
 
+bool StoreWord(R3051*, uint32_t, uint32_t);
+
 void InterpretAddu(R3051*, uint32_t);
 void InterpretSubu(R3051*, uint32_t);
 void InterpretAddiu(R3051*, uint32_t);
