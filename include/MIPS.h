@@ -25,13 +25,20 @@ class R3051 {
 public:
     R3051();
 
-    [[nodiscard]] uint32_t ReadRegister(uint32_t) const;
-    void WriteRegister(uint32_t, uint32_t);
-
     [[nodiscard]] uintptr_t RegisterAddress(uint32_t) const;
-
+    [[nodiscard]] uint32_t ReadRegister(uint32_t) const;
     [[nodiscard]] uint32_t ReadPC() const;
+    [[nodiscard]] bool GetLoadDelaySlot() const;
+    [[nodiscard]] bool GetLoadDelaySlotNext() const;
+    [[nodiscard]] uint32_t GetLoadDelayRegister() const;
+    [[nodiscard]] uint32_t GetLoadDelayValue() const;
+
+    void WriteRegister(uint32_t, uint32_t);
     void WritePC(uint32_t);
+    void SetLoadDelaySlot(bool);
+    void SetLoadDelaySlotNext(bool);
+    void SetLoadDelayRegister(uint32_t);
+    void SetLoadDelayValue(uint32_t);
 
     COP0& Cop0();
 
@@ -39,6 +46,10 @@ private:
     uint32_t registers[32];
     uint32_t pc;
     COP0 cop0;
+    bool loadDelaySlot;
+    bool loadDelaySlotNext;
+    uint32_t loadDelayRegister;
+    uint32_t loadDelayValue;
 };
 
 uint32_t ReadPC(R3051*);
@@ -60,6 +71,7 @@ uint32_t ReadRegisterRt(R3051*, uint32_t);
 uint32_t ReadRegisterRs(R3051*, uint32_t);
 
 bool StoreWord(R3051*, uint32_t, uint32_t);
+bool LoadWord(R3051*, uint32_t, uint32_t);
 
 void InterpretAddu(R3051*, uint32_t);
 void InterpretSubu(R3051*, uint32_t);
