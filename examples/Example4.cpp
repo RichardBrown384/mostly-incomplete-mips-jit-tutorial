@@ -5,13 +5,15 @@
 
 namespace {
 
-void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3051 &processor, uint32_t opcode) {
+void CallInterpreterFunction(
+        rbrown::EmitterX64 &emitter,
+        uintptr_t function,
+        rbrown::R3051 &processor,
+        uint32_t opcode) {
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR32Imm32(RSI, opcode);
-    emitter.SubR64Imm8(RSP, 8u);
     emitter.Call(function);
-    emitter.AddR64Imm8(RSP, 8u);
 }
 
 void EmitAddu(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
@@ -61,11 +63,8 @@ void Example4() {
 
     // Prologue
     EmitterX64 emitter(buffer);
-    emitter.PushR64(RDI);
-    emitter.PushR64(RSI);
-    emitter.PushR64(RAX);
-    emitter.PushR64(RCX);
-    emitter.SubR64Imm8(RSP, 8);
+    emitter.PushR64(RBP);
+    emitter.MovR64R64(RBP, RSP);
 
     // Instructions
     // ADDU $3, $1, $2
@@ -75,11 +74,8 @@ void Example4() {
     }
 
     // Epilogue
-    emitter.AddR64Imm8(RSP, 8);
-    emitter.PopR64(RCX);
-    emitter.PopR64(RAX);
-    emitter.PopR64(RSI);
-    emitter.PopR64(RDI);
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
 
     buffer.Protect();

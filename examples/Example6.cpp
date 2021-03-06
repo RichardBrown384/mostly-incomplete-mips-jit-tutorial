@@ -77,11 +77,8 @@ void Example6() {
 
     // Prologue
     EmitterX64 emitter(buffer);
-    emitter.PushR64(RDI);
-    emitter.PushR64(RSI);
-    emitter.PushR64(RAX);
-    emitter.PushR64(RCX);
-    emitter.PushR64(RDX);
+    emitter.PushR64(RBP);
+    emitter.MovR64R64(RBP, RSP);
 
     // Instructions
     // ADDU $3, $1, $2
@@ -92,11 +89,8 @@ void Example6() {
     }
 
     // Epilogue
-    emitter.PopR64(RDX);
-    emitter.PopR64(RCX);
-    emitter.PopR64(RAX);
-    emitter.PopR64(RSI);
-    emitter.PopR64(RDI);
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
 
     buffer.Protect();

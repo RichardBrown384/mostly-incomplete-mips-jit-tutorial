@@ -13,9 +13,23 @@ void CallInterpreterFunction(
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR32Imm32(RSI, arg1);
-    emitter.SubR64Imm8(RSP, 8u);
     emitter.Call(function);
-    emitter.AddR64Imm8(RSP, 8u);
+}
+
+void CallStoreWord(
+        rbrown::EmitterX64& emitter,
+        rbrown::R3051& processor,
+        uint32_t rs,
+        uint32_t rt,
+        uint32_t immediate) {
+    using namespace rbrown;
+    const size_t size = sizeof(uint32_t);
+    emitter.MovR64Imm64(RDI, AddressOf(processor));
+    emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
+    emitter.MovR32Disp8(RSI, RDX, static_cast<uint8_t>(rs * size));
+    emitter.AddR32Imm32(RSI, immediate);
+    emitter.MovR32Disp8(RDX, RDX, static_cast<uint8_t>(rt * size));
+    emitter.Call(AddressOf(StoreWord));
 }
 
 void EmitSw(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
@@ -24,19 +38,16 @@ void EmitSw(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opco
     const uint32_t rs = InstructionRs(opcode);
     const uint32_t rt = InstructionRt(opcode);
     const uint32_t immediate = InstructionImmediateExtended(opcode);
-    const size_t size = sizeof(uint32_t);
     Label resume = emitter.NewLabel();
+    // Restore the program counter
     CallInterpreterFunction(emitter, AddressOf(WritePC), processor, 0xBADC0FFE);
-    emitter.MovR64Imm64(RDI, AddressOf(processor));
-    emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
-    emitter.MovR32Disp8(RSI, RDX, static_cast<uint8_t>(rs * size));
-    emitter.AddR32Imm32(RSI, immediate);
-    emitter.MovR32Disp8(RDX, RDX, static_cast<uint8_t>(rt * size));
-    emitter.SubR64Imm8(RSP, 8u);
-    emitter.Call(AddressOf(StoreWord));
-    emitter.AddR64Imm8(RSP, 8u);
+    // Call store word
+    CallStoreWord(emitter, processor, rs, rt, immediate);
+    // Return from recompiled function in event of an exception
     emitter.TestALImm8(1u);
     emitter.Jne(resume);
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
     emitter.Bind(resume);
 }
@@ -63,6 +74,8 @@ void Example8() {
 
     // Prologue
     EmitterX64 emitter(buffer);
+    emitter.PushR64(RBP);
+    emitter.MovR64R64(RBP, RSP);
 
     // Instructions
     // SW $1, $2, 64
@@ -72,6 +85,8 @@ void Example8() {
     }
 
     // Epilogue
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
 
     buffer.Protect();

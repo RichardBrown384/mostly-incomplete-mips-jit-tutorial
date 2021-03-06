@@ -28,9 +28,10 @@ public:
     void SubR64Imm8(uint32_t, uint8_t);
     void MovR32R32(uint32_t, uint32_t);
     void MovR32Disp8(uint32_t, uint32_t, uint8_t);
-    void MovR32Imm32(uint32_t, uint32_t);
-    void MovR64Imm64(uint32_t, uint64_t);
     void MovDisp8R32(uint32_t, uint8_t, uint32_t);
+    void MovR32Imm32(uint32_t, uint32_t);
+    void MovR64R64(uint32_t, uint32_t);
+    void MovR64Imm64(uint32_t, uint64_t);
     void MovEAXAbs(uintptr_t);
     void MovAbsEAX(uintptr_t);
     void PushR64(uint32_t);

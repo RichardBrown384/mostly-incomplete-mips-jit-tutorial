@@ -5,13 +5,15 @@
 
 namespace {
 
-void CallInterpreterFunction(rbrown::EmitterX64 &emitter, uintptr_t function, rbrown::R3051 &processor, uint32_t arg1) {
+void CallInterpreterFunction(
+        rbrown::EmitterX64 &emitter,
+        uintptr_t function,
+        rbrown::R3051 &processor,
+        uint32_t arg1) {
     using namespace rbrown;
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR32Imm32(RSI, arg1);
-    emitter.SubR64Imm8(RSP, 8u);
     emitter.Call(function);
-    emitter.AddR64Imm8(RSP, 8u);
 }
 
 void EmitAdd(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
@@ -29,6 +31,8 @@ void EmitAdd(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opc
     emitter.Jno(setRegister);
     CallInterpreterFunction(emitter, AddressOf(WritePC), processor, 0xBADC0FFE);
     CallInterpreterFunction(emitter, AddressOf(EnterException), processor, ARITHMETIC_OVERFLOW);
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
     emitter.Bind(setRegister);
     emitter.MovDisp8R32(RDX, static_cast<uint8_t>(rd * size), RAX);
@@ -61,6 +65,8 @@ void Example7() {
 
     // Prologue
     EmitterX64 emitter(buffer);
+    emitter.PushR64(RBP);
+    emitter.MovR64R64(RBP, RSP);
 
     // Instructions
     // ADD $3, $1, $2
@@ -70,6 +76,8 @@ void Example7() {
     }
 
     // Epilogue
+    emitter.MovR64R64(RSP, RBP);
+    emitter.PopR64(RBP);
     emitter.Ret();
 
     buffer.Protect();
