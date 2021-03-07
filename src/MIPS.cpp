@@ -162,18 +162,18 @@ void InterpretAdd(R3051* r3051, uint32_t opcode) {
 }
 
 void InterpretSw(R3051* r3051, uint32_t opcode) {
-    const uint32_t s = ReadRegisterRs(r3051, opcode); // base
+    const uint32_t base = ReadRegisterRs(r3051, opcode);
     const uint32_t t = ReadRegisterRt(r3051, opcode);
-    const uint32_t immediate = InstructionImmediateExtended(opcode);
-    StoreWord(r3051, s + immediate, t);
+    const uint32_t offset = InstructionImmediateExtended(opcode);
+    StoreWord(r3051, base + offset, t);
 }
 
 void InterpretLw(R3051* r3051, uint32_t opcode) {
-    const uint32_t s = ReadRegisterRs(r3051, opcode); // base
+    const uint32_t base = ReadRegisterRs(r3051, opcode);
     const uint32_t t = ReadRegisterRt(r3051, opcode);
-    const uint32_t immediate = InstructionImmediateExtended(opcode);
+    const uint32_t offset = InstructionImmediateExtended(opcode);
     uint32_t value;
-    if (LoadWord(r3051, s + immediate, &value)) {
+    if (LoadWord(r3051, base + offset, &value)) {
         WriteRegisterDelayed(r3051, t, value);
     }
 }

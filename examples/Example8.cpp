@@ -19,15 +19,16 @@ void CallInterpreterFunction(
 void CallStoreWord(
         rbrown::EmitterX64& emitter,
         rbrown::R3051& processor,
-        uint32_t rs,
-        uint32_t rt,
-        uint32_t immediate) {
+        uint32_t opcode) {
     using namespace rbrown;
+    const uint32_t base = InstructionRs(opcode);
+    const uint32_t rt = InstructionRt(opcode);
+    const uint32_t offset = InstructionImmediateExtended(opcode);
     const size_t size = sizeof(uint32_t);
     emitter.MovR64Imm64(RDI, AddressOf(processor));
     emitter.MovR64Imm64(RDX, processor.RegisterAddress(0));
-    emitter.MovR32Disp8(RSI, RDX, static_cast<uint8_t>(rs * size));
-    emitter.AddR32Imm32(RSI, immediate);
+    emitter.MovR32Disp8(RSI, RDX, static_cast<uint8_t>(base * size));
+    emitter.AddR32Imm32(RSI, offset);
     emitter.MovR32Disp8(RDX, RDX, static_cast<uint8_t>(rt * size));
     emitter.Call(AddressOf(StoreWord));
 }
@@ -35,14 +36,11 @@ void CallStoreWord(
 void EmitSw(rbrown::EmitterX64& emitter, rbrown::R3051& processor, uint32_t opcode) {
     // Store word
     using namespace rbrown;
-    const uint32_t rs = InstructionRs(opcode);
-    const uint32_t rt = InstructionRt(opcode);
-    const uint32_t immediate = InstructionImmediateExtended(opcode);
     Label resume = emitter.NewLabel();
     // Restore the program counter
     CallInterpreterFunction(emitter, AddressOf(WritePC), processor, 0xBADC0FFE);
     // Call store word
-    CallStoreWord(emitter, processor, rs, rt, immediate);
+    CallStoreWord(emitter, processor, opcode);
     // Return from recompiled function in event of an exception
     emitter.TestALImm8(1u);
     emitter.Jne(resume);
