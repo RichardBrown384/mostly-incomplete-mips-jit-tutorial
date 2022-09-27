@@ -1,0 +1,240 @@
+# Dynamic recompilation Part 1
+## Every journey has a first step...
+
+### Preamble
+The code that accompanies this series of articles is hosted [here][repository-url].
+
+The topics discussed in this article are moderately advanced in nature.
+They require a good grounding in what a microprocessor is and how registers and memory addressing works.
+
+Some knowledge of assembly would also be advantageous but not strictly necessary.
+
+I wouldn't advise using the recompiler developed in this series in production.
+It's intended as a sketch from which one might develop a fully fledged recompiler. 
+There are quite a number of deficiencies and I will do my best to point those out along the way.
+
+### Introduction
+I've always been fascinated by the topic of making software written for one type of computer run on another.
+I've written a couple of emulators in the past, but I was truly in awe of those that used dynamic recompilation
+to achieve the same. They were _fast_.
+
+I haven't attempted to write a dynamic recompiler until now.
+They're hard things to write and my understanding of the x86–64 instruction set is relatively limited.
+And, I've been terrified of melting my computer.
+
+The focus is going to be on trying to write parts of a dynamic recompiler for the MIPS R3000 microprocessor
+(a derivative was used in the Playstation 1). Being a RISC processor it has a relatively small
+instruction set, but it has pipeline hazards that might make things a little more interesting.
+
+I'll be working with the System V AMD64 ABI[^1] calling conventions.
+Windows users can follow along, but there are differences which means the examples
+presented here won't work out of the box.
+
+The term Host processor means the physical processor in your machine and
+Guest processor means the processor you're trying to simulate.
+
+Without further ado...
+
+### Why dynamic recompilation?
+The simplest approach to making software written for one processor family run
+on another processor is to interpret it. A simplified interpreter might look something like this:
+
+```c++
+void GuestCPU::Interpret() {
+    uint32_t instruction = ReadNextInstruction();
+    switch (instruction) {
+        case ADD: return InterpretAdd();
+        case SUB: return InterpretSub();
+        default:
+            InterpretUndefined();
+    }
+}
+
+int main() {
+    GuestCPU cpu;
+    while (true) {
+        cpu.Interpret();
+    }
+    return 0;
+}
+```
+
+The Interpret method fetches an instruction, makes an attempt to decode it, and
+then performs some action or other. For older 8-bit, 16-bit and even in some cases
+32-bit processors this approach can work quite well but this technique is not the fastest.
+
+The act of fetching the next instruction causes a type of delay called an _Address Generation Interlock_.
+The Interpreter has to increment the _Guest Program Counter_ and then fetch the next instruction from that location
+in memory. This essentially inhibits instruction parallelism on modern processors where multiple
+independent instructions can be executed at once[^2].
+
+Modern processors try to make guesses about which path of a branch is going to be taken.
+If they guess correctly then there's a performance increase; if not there's a penalty and these penalties can stack up.
+The switch statement is particularly bad because you're essentially saying to your processor 
+_"Here's north of 200 places where you could go next. Have fun with that."_
+
+There are things you can do to alleviate this for a moderate speed gain, but
+they're generally not supported across all compilers.
+
+In addition to this there's usually the overhead of keeping the Guest Processor's 
+status flags up to date. Arithmetic operations, for example, will typically need to
+calculate the state of the Carry, Overflow, Zero, and Negative flags.
+You can do this reasonably efficiently but the chances are the Host Processor already did
+that calculation for you, and you can't access it trivially from a language like C++.
+
+Dynamic recompilers can eliminate the Interlock, remove the need for much of the branch prediction
+and take advantage of the Host processor's status register. Additionally, the smarter ones can analyse
+and code being translated and optimise it even further.
+
+### What is dynamic recompilation?
+Dynamic recompilation is the process of taking machine instructions targeting one processor
+family and translating them into instructions targeting another processor family at run time.
+
+For example, we could take the MIPS instruction
+
+```asm
+ADDU R1, R2, R3
+```
+
+which adds **R2** and **R3** together and puts the result into **R1** and translate it to the
+following x86–64 instructions, in Intel syntax[^3],
+
+```asm
+MOV EAX, ECX ; MOV EAX(R1), ECX(R2)
+ADD EAX, EDX ; ADD EAX(R1), EDX(R3)
+```
+
+and then execute them.
+
+Dynamic recompilers typically used to work by taking the Guest Program Counter and asking a
+Translation Cache if the Guest code at that address has already been translated. 
+If it has, then the existing translated code is executed. If not then the code gets translated
+until the recompiler encounters a branch instruction. This new code is inserted into the cache
+and then executed. After the branch the new Guest Program Counter is used to query the Translation Cache and so on.
+
+Not all is plain sailing however, and we have to be mindful of self-modifying code. 
+That is, code that rewrites itself effectively invalidates its own translation and
+will need re-translating. For now, we're going to consider this an advanced topic and put it to one side.
+
+### How do we do dynamic recompilation?
+Machine code essentially boils down to a sequence of bytes. The task essentially is to take the 
+series of bytes that the Guest Processor would understand and translate them into a series of
+bytes the Host Processor can understand.
+
+#### Asking the OS for permission
+We therefore need to store some bytes. But we can't store them anywhere,
+a **std::vector** of **unsigned char** just won't do. We want to store the 
+bytes somewhere where we can ask the Operating System very nicely to make 
+those bytes executable by the processor.
+
+On Linux/macOS we need to use **mmap** from **<sys/mman.h>**.
+
+We need this function
+
+```c++
+void* Map(size_t length) {
+    return mmap(nullptr, length, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+}
+```
+
+to request to map a block of memory with Read and Write permissions that isn't backed by a file
+(**MAP_ANONYMOUS** and **-1** being passed as the file descriptor) with offset **0**.
+
+To be good citizens and clean up after our selves we also will need
+
+```c++
+int Unmap(void* addr, size_t length) {
+    return munmap(addr, length);
+}
+```
+
+to un-map the memory at the end.
+
+Finally, to make the block of memory executable we will need a method to remove the
+Write-permissions and set the Executable-permission we will need the following.
+
+```c++
+int Protect(void* addr, size_t length) {
+    return mprotect(addr, length, PROT_READ | PROT_EXEC);
+}
+```
+
+This is necessary because it would be a very, very, very bad idea to take some
+untrusted code and allow it to write to executable memory and thereby inject malicious
+instructions into its own stream to execute.
+
+Windows has similar functions in the forms of **VirtualAlloc**, **VirtualFree** and **VirtualProtect**.
+
+## Providing a layer of abstraction
+While this is all to the good, it's not very nice from the perspective of someone wanting to
+write a dynamic recompiler. Let's wrap this block of memory in a helper class:
+
+```c++
+class CodeBuffer {
+public:
+    explicit CodeBuffer(size_t);
+    ~CodeBuffer();
+    void Protect();
+    void Call();
+    void Byte(uint8_t);
+private:
+    void* buffer;
+    size_t length;
+    size_t pos;
+};
+```
+
+There's not too much to this. The constructor maps a block of memory of a given length whose
+pointer to which gets stored in the **buffer** member. The destructor cleans up and the **Protect** method
+makes the block of memory executable.
+
+The **Byte** method puts a byte at the position indicated by **pos** and then increments **pos**.
+
+The interesting method is **Call**.
+
+```c++
+void CodeBuffer::Call() {
+    reinterpret_cast<void (*)()>(buffer)();
+}
+```
+
+It recasts **buffer** as a no-argument function with a void return type and then calls it. 
+We might want a more flexible solution with argument passing later but this should suffice for now.
+
+#### Putting it all together
+We now have something that will allow us to execute arbitrary instructions on the Host.
+Putting it together we get something like
+
+```c++
+CodeBuffer buffer(1024);
+buffer.Byte(0xC3u);
+buffer.Protect();
+buffer.Call();
+```
+
+The function we're written is pretty trivial and does nothing other than immediately
+return, **0xC3** being the code for the return instruction[^4][^5].
+
+
+### Conclusion
+
+In this article we've discussed why you might want to consider writing a Dynamic Recompiler, 
+the basics around requesting executable memory and writing a simple do-nothing function.
+
+Next time we'll discuss the x86–64 instruction set in some more detail and talk about
+the System V AMD64 ABI requirements for stack-alignment.
+
+### References
+
+[^1]: [System V AMD64 ABI][system-v-amd64-abi]
+[^2]: [Article on emulators.com about interpreter loops][interpreter-loops]
+[^3]: [Intel vs AT&T syntax][wikipedia-intel-vs-at-t]
+[^4]: [Intel Software Developer's Manual][intel-reference-manual]
+[^5]: [Felix Cloutier's Intel Online Reference][intel-online-reference-cloutier]
+
+[repository-url]: https://github.com/RichardBrown384/mips-jit-tutorial.git
+[system-v-amd64-abi]: https://wiki.osdev.org/System_V_ABI
+[interpreter-loops]: http://www.emulators.com/docs/nx25_nostradamus.htm
+[wikipedia-intel-vs-at-t]: https://en.wikipedia.org/wiki/X86_assembly_language#Syntax
+[intel-reference-manual]: https://software.intel.com/content/www/us/en/develop/download/intel-64-and-ia-32-architectures-sdm-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html
+[intel-online-reference-cloutier]: https://www.felixcloutier.com/x86/
