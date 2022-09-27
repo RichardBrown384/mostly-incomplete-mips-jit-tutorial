@@ -140,6 +140,12 @@ void EmitterX64::MovAbsEAX(uintptr_t address) {
     buffer.QWord(address);
 }
 
+void EmitterX64::LeaR64Disp8(uint32_t reg, uint32_t rm, uint8_t disp8) {
+    const uint8_t rex = Rex(1u, reg >> 3u, 0, rm >> 3u);
+    const uint8_t mod = ModRM(1u, reg, rm);
+    buffer.Bytes({rex, 0x8D, mod, disp8});
+}
+
 void EmitterX64::PushR64(uint32_t rd) {
     const uint8_t rex = Rex(0, 0, 0, rd >> 3u);
     const uint8_t code = static_cast<const uint8_t>(0x50u + (rd & 7u));

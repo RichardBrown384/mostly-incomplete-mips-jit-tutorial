@@ -102,20 +102,6 @@ void WriteRegisterRt(R3051* r3051, uint32_t opcode, uint32_t value) {
     WriteRegister(r3051, InstructionRt(opcode), value);
 }
 
-void WriteRegisterDelayed(R3051* r3051, uint32_t r, uint32_t value) {
-    if (GetLoadDelaySlot(r3051)) {
-        const uint32_t loadDelayedRegister = GetLoadDelayRegister(r3051);
-        const uint32_t loadDelayedValue = GetLoadDelayValue(r3051);
-        if (loadDelayedRegister != r) {
-            WriteRegister(r3051, loadDelayedRegister, loadDelayedValue);
-        }
-        SetLoadDelaySlot(r3051, false);
-    }
-    SetLoadDelaySlotNext(r3051, true);
-    SetLoadDelayRegister(r3051, r);
-    SetLoadDelayValue(r3051, value);
-}
-
 uint32_t ReadRegisterRt(R3051* r3051, uint32_t opcode) {
     return ReadRegister(r3051, InstructionRt(opcode));
 }
@@ -129,6 +115,7 @@ bool StoreWord(R3051* r3051, uint32_t virtualAddress, uint32_t value) {
 }
 
 bool LoadWord(R3051* r3051, uint32_t virtualAddress, uint32_t* value) {
+    *value = 301u;
     return true;
 }
 
@@ -169,12 +156,22 @@ void InterpretSw(R3051* r3051, uint32_t opcode) {
 }
 
 void InterpretLw(R3051* r3051, uint32_t opcode) {
+    const uint32_t rt = InstructionRt(opcode);
+    if (GetLoadDelaySlot(r3051)) {
+        const uint32_t dr = GetLoadDelayRegister(r3051);
+        const uint32_t dv = GetLoadDelayValue(r3051);
+        if (rt != dr) {
+            WriteRegister(r3051, dr, dv);
+        }
+        SetLoadDelaySlot(r3051, false);
+    }
     const uint32_t base = ReadRegisterRs(r3051, opcode);
-    const uint32_t t = ReadRegisterRt(r3051, opcode);
     const uint32_t offset = InstructionImmediateExtended(opcode);
     uint32_t value;
     if (LoadWord(r3051, base + offset, &value)) {
-        WriteRegisterDelayed(r3051, t, value);
+        SetLoadDelaySlotNext(r3051, true);
+        SetLoadDelayRegister(r3051, rt);
+        SetLoadDelayValue(r3051, value);
     }
 }
 }

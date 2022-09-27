@@ -34,6 +34,7 @@ public:
     void MovR64Imm64(uint32_t, uint64_t);
     void MovEAXAbs(uintptr_t);
     void MovAbsEAX(uintptr_t);
+    void LeaR64Disp8(uint32_t, uint32_t, uint8_t);
     void PushR64(uint32_t);
     void PopR64(uint32_t);
     void CallRel32(uint32_t);

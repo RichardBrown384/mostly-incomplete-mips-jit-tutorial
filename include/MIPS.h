@@ -54,6 +54,10 @@ private:
 
 uint32_t ReadPC(R3051*);
 void WritePC(R3051*, uint32_t);
+void SetLoadDelaySlot(R3051*, bool);
+void SetLoadDelaySlotNext(R3051*, bool);
+void SetLoadDelayRegister(R3051*, uint32_t);
+void SetLoadDelayValue(R3051*, uint32_t);
 
 void EnterException(R3051*, uint32_t);
 
