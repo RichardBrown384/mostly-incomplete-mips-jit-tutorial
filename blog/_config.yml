@@ -1,6 +1,6 @@
 # Site settings
-url: https://richardbrown384.github.io
-baseurl: /mostly-incomplete-mips-jit-tutorial
+website: https://richardbrown384.github.io
+basewebsite: /mostly-incomplete-mips-jit-tutorial
 title: The Mostly Incomplete MIPS JIT Tutorial
 description: >-
   A series of blog articles outlining the basics of writing
