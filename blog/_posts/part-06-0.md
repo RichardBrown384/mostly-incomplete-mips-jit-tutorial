@@ -72,7 +72,7 @@ behalf of the caller.
 
 The SW instruction is an I-Type instruction with its fields laid out as follows
 
-![Store Word I-Type Layout](./images/part-06-0/store_word_i_type_layout.png)
+![Store Word I-Type Layout](../assets/images/part-06-0/store_word_i_type_layout.png)
 
 An implementation for the interpreter might look as follows
 
