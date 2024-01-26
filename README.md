@@ -1,6 +1,8 @@
 # The Mostly Incomplete MIPS JIT Tutorial
 Series of examples outlining how to build a x64 JIT for a MIPS processor.
 
+There is an accompanying series of blog articles [here][gh-pages-blog].
+
 ## About
 This repository comprises a series of exercises written while trying to learn about how one might go about trying to 
 dynamically recompile MIPS instructions for the x64 architecture.
@@ -59,6 +61,7 @@ In this example we attempt to store a register in memory.
 
 ***
 
+[gh-pages-blog]: https://richardbrown384.github.io/mostly-incomplete-mips-jit-tutorial/
 [bendersky-jit-tutorial]: https://eli.thegreenplace.net/2017/adventures-in-jit-compilation-part-2-an-x64-jit/
 [x64-stack-alignment]: https://users.rust-lang.org/t/jit-stack-protection-woes/6710
 [x64-call-absolute]: https://stackoverflow.com/questions/19552158/call-an-absolute-pointer-in-x86-machine-code?noredirect=1&lq=1
