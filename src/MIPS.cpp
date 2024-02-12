@@ -115,7 +115,6 @@ bool StoreWord(R3051* r3051, uint32_t virtualAddress, uint32_t value) {
 }
 
 bool LoadWord(R3051* r3051, uint32_t virtualAddress, uint32_t* value) {
-    *value = 301u;
     return true;
 }
 
