@@ -10,6 +10,7 @@ add_executable(tutorial
     src/Label.cpp
     src/MIPS.cpp
     src/Mmap.cpp
+    src/RecompilerState.cpp
     examples/Example1.cpp
     examples/Example2.cpp
     examples/Example3.cpp
@@ -18,6 +19,7 @@ add_executable(tutorial
     examples/Example6.cpp
     examples/Example7.cpp
     examples/Example8.cpp
+    examples/Example9.cpp
     main.cpp
 )
 
