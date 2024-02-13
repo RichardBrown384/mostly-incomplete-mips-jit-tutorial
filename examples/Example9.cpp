@@ -4,7 +4,7 @@
 #include "X64.h"
 #include "MIPS.h"
 
-constexpr uint8_t LOAD_DELAY_VALUE_OFFSET = static_cast<uint8_t>(-4);
+constexpr uint8_t LOAD_DELAY_VALUE_OFFSET = -4;
 
 namespace {
 
@@ -121,7 +121,7 @@ void Example9() {
     processor.SetLoadDelaySlotNext(false);
 
     // Set up recompiler state from interpreter state
-    RecompilerState state;
+    RecompilerState state(0u);
     state.SetLoadDelayRegister(processor.GetLoadDelayRegister());
     state.SetLoadDelaySlotNext(processor.GetLoadDelaySlotNext());
     state.SetLoadDelaySlot(processor.GetLoadDelaySlot());
@@ -155,7 +155,7 @@ void Example9() {
     CallInterpreterFunction(emitter, AddressOf(SetLoadDelayRegister), processor, state.GetLoadDelayRegister());
     CallInterpreterFunction(emitter, AddressOf(SetLoadDelaySlotNext), processor, state.GetLoadDelaySlotNext());
     CallInterpreterFunction(emitter, AddressOf(SetLoadDelaySlot), processor, state.GetLoadDelaySlot());
-    emitter.AddR64Imm8(RSP, 16);
+    emitter.AddR64Imm8(RSP, 0x10);
     emitter.MovR64R64(RSP, RBP);
     emitter.PopR64(RBP);
     emitter.Ret();

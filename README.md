@@ -51,6 +51,12 @@ In this example we attempt to deal with arithmetic overflow.
 ### Example 8
 In this example we attempt to store a register in memory.
 
+### Example 9
+In this example we attempt to load a register from memory.
+
+### Example 10
+In this example we attempt to deal with branch instructions.
+
 ## References
 
 1. [Compiler explorer](https://godbolt.org)

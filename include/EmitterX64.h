@@ -17,7 +17,10 @@ public:
     void Bind(Label&);
     void Jno(const Label&);
     void Jne(const Label&);
+    void Js(const Label&);
+    void Jmp(const Label&);
     void TestALImm8(uint8_t);
+    void CmpR32Imm8(uint32_t, uint8_t);
     void AddR32R32(uint32_t, uint32_t);
     void AddR32Imm32(uint32_t, uint32_t);
     void AddR64Imm8(uint32_t, uint8_t);

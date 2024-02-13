@@ -16,7 +16,7 @@ public:
     [[nodiscard]] size_t Position() const;
     void Byte(uint8_t);
     void Byte(size_t, uint8_t);
-    void Bytes(std::initializer_list<uint8_t>);
+    void Bytes(const std::initializer_list<uint8_t>&);
     void Word(uint16_t);
     void DWord(uint32_t);
     void QWord(uint64_t);

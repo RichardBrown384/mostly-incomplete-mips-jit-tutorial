@@ -36,7 +36,7 @@ void CodeBuffer::Byte(size_t position, uint8_t b) {
     *(reinterpret_cast<uint8_t*>(buffer) + position) = b;
 }
 
-void CodeBuffer::Bytes(std::initializer_list<uint8_t> bs) {
+void CodeBuffer::Bytes(const std::initializer_list<uint8_t>& bs) {
     for (auto b: bs) { Byte(b); }
 }
 
