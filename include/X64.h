@@ -1,5 +1,4 @@
-#ifndef RBROWN_X64_H
-#define RBROWN_X64_H
+#pragma once
 
 #include <cstdint>
 
@@ -15,5 +14,3 @@ constexpr uint32_t RSI = 6;
 constexpr uint32_t RDI = 7;
 
 }
-
-#endif

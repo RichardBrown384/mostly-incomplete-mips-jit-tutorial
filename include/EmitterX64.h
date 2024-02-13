@@ -1,6 +1,3 @@
-#ifndef RBROWN_EMITTERX64_H
-#define RBROWN_EMITTERX64_H
-
 #include <cstdint>
 #include <memory>
 #include <map>
@@ -54,5 +51,3 @@ uintptr_t AddressOf(T& target) {
 }
 
 }
-
-#endif

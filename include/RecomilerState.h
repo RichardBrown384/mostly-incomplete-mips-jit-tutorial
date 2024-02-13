@@ -1,6 +1,3 @@
-#ifndef RBROWN_RECOMPILER_STATE_H
-#define RBROWN_RECOMPILER_STATE_H
-
 #pragma once
 
 #include <cstdint>
@@ -24,5 +21,3 @@ private:
 };
 
 }
-
-#endif
