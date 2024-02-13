@@ -20,6 +20,7 @@ add_executable(tutorial
     examples/Example7.cpp
     examples/Example8.cpp
     examples/Example9.cpp
+    examples/Example10.cpp
     main.cpp
 )
 
