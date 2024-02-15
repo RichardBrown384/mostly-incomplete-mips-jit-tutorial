@@ -1,6 +1,3 @@
-#ifndef RBROWN_CALLSITE_H
-#define RBROWN_CALLSITE_H
-
 #pragma once
 
 #include <cstddef>
@@ -16,5 +13,3 @@ private:
 };
 
 }
-
-#endif

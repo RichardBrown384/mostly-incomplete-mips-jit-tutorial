@@ -1,6 +1,3 @@
-#ifndef RBROWN_MIPS_H
-#define RBROWN_MIPS_H
-
 #pragma once
 
 #include <cstdint>
@@ -85,5 +82,3 @@ void InterpretSw(R3051*, uint32_t);
 void InterpretLw(R3051*, uint32_t);
 
 }
-
-#endif

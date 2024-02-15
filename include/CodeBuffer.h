@@ -1,6 +1,3 @@
-#ifndef RBROWN_CODE_BUFFER_H
-#define RBROWN_CODE_BUFFER_H
-
 #pragma once
 
 #include <cstddef>
@@ -30,4 +27,3 @@ private:
 };
 
 }
-#endif

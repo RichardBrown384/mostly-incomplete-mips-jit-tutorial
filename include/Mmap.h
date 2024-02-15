@@ -1,6 +1,3 @@
-#ifndef RBROWN_MMAP_H
-#define RBROWN_MMAP_H
-
 #pragma once
 
 #include <cstddef>
@@ -14,5 +11,3 @@ int Protect(void*, size_t);
 int Unmap(void*, size_t);
 
 }
-
-#endif
