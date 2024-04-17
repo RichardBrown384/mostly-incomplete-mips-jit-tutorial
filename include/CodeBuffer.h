@@ -1,6 +1,3 @@
-#ifndef RBROWN_CODE_BUFFER_H
-#define RBROWN_CODE_BUFFER_H
-
 #pragma once
 
 #include <cstddef>
@@ -19,7 +16,7 @@ public:
     [[nodiscard]] size_t Position() const;
     void Byte(uint8_t);
     void Byte(size_t, uint8_t);
-    void Bytes(std::initializer_list<uint8_t>);
+    void Bytes(const std::initializer_list<uint8_t>&);
     void Word(uint16_t);
     void DWord(uint32_t);
     void QWord(uint64_t);
@@ -30,4 +27,3 @@ private:
 };
 
 }
-#endif

@@ -1,5 +1,4 @@
-#ifndef RBROWN_LABEL_H
-#define RBROWN_LABEL_H
+#pragma once
 
 #include <cstdint>
 #include <memory>
@@ -20,5 +19,3 @@ private:
 };
 
 }
-
-#endif

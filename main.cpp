@@ -7,6 +7,7 @@ void Example6();
 void Example7();
 void Example8();
 void Example9();
+void Example10();
 
 int main() {
     Example1();
@@ -18,5 +19,6 @@ int main() {
     Example7();
     Example8();
     Example9();
+    Example10();
     return 0;
 }
